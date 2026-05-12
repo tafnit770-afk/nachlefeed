@@ -16,11 +16,12 @@
 }
 
 .header-menu-btn {
-  display: none;
+  display: flex;
   background: transparent; border: none;
   color: var(--text-secondary); padding: 8px;
   border-radius: var(--radius-sm);
   transition: background 0.2s;
+  align-items: center; justify-content: center;
 }
 .header-menu-btn:hover { background: var(--bg); }
 
