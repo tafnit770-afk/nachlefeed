@@ -3,43 +3,53 @@ import { useState, useEffect } from 'react';
 import { collection, getDocs, deleteDoc, doc, query, orderBy, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import toast from 'react-hot-toast';
-import { Trash2, Eye, ChevronDown, ChevronUp } from 'lucide-react';
+import { Trash2, Eye, EyeOff, MessageCircle } from 'lucide-react';
 import './AdminTable.css';
+import './AdminConversations.css';
 
 export default function AdminConversations() {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedConv, setExpandedConv] = useState(null);
   const [messages, setMessages] = useState({});
+  const [loadingMsgs, setLoadingMsgs] = useState(false);
 
   useEffect(() => { loadConvs(); }, []);
 
   const loadConvs = async () => {
     setLoading(true);
-    const snap = await getDocs(query(collection(db, 'conversations'), orderBy('lastMessageAt', 'desc')));
-    setConversations(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    try {
+      const snap = await getDocs(collection(db, 'conversations'));
+      const convs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      convs.sort((a, b) => (b.lastMessageAt?.seconds || 0) - (a.lastMessageAt?.seconds || 0));
+      setConversations(convs);
+    } catch (e) { console.error(e); }
     setLoading(false);
   };
 
   const loadMessages = async (convId) => {
-    if (messages[convId]) { setExpandedConv(convId); return; }
-    const snap = await getDocs(query(collection(db, 'messages'), where('conversationId', '==', convId), orderBy('createdAt', 'asc')));
-    setMessages(p => ({ ...p, [convId]: snap.docs.map(d => ({ id: d.id, ...d.data() })) }));
+    if (expandedConv === convId) { setExpandedConv(null); return; }
+    setLoadingMsgs(true);
     setExpandedConv(convId);
-  };
-
-  const toggleConv = (id) => {
-    if (expandedConv === id) { setExpandedConv(null); return; }
-    loadMessages(id);
+    if (!messages[convId]) {
+      try {
+        const snap = await getDocs(query(
+          collection(db, 'messages'),
+          where('conversationId', '==', convId),
+          orderBy('createdAt', 'asc')
+        ));
+        setMessages(p => ({ ...p, [convId]: snap.docs.map(d => ({ id: d.id, ...d.data() })) }));
+      } catch (e) { console.error(e); }
+    }
+    setLoadingMsgs(false);
   };
 
   const deleteConv = async (id) => {
-    if (!confirm('מחק שיחה זו?')) return;
+    if (!confirm('מחק שיחה זו וכל ההודעות שבה?')) return;
     try {
-      await deleteDoc(doc(db, 'conversations', id));
-      // Also delete messages
       const msgSnap = await getDocs(query(collection(db, 'messages'), where('conversationId', '==', id)));
       await Promise.all(msgSnap.docs.map(d => deleteDoc(d.ref)));
+      await deleteDoc(doc(db, 'conversations', id));
       setConversations(p => p.filter(c => c.id !== id));
       toast.success('השיחה נמחקה');
     } catch { toast.error('שגיאה'); }
@@ -59,64 +69,80 @@ export default function AdminConversations() {
 
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         {loading ? (
-          <div style={{ padding: 48, textAlign: 'center' }}><span className="spinner" style={{ width: 32, height: 32, margin: 'auto', display: 'block' }} /></div>
+          <div style={{ padding: 48, textAlign: 'center' }}>
+            <span className="spinner" style={{ width: 32, height: 32, margin: 'auto', display: 'block' }} />
+          </div>
+        ) : conversations.length === 0 ? (
+          <div style={{ padding: 48, textAlign: 'center', color: 'var(--text-muted)' }}>
+            <MessageCircle size={40} style={{ margin: '0 auto 12px' }} />
+            <p>אין שיחות עדיין</p>
+          </div>
         ) : (
-          <div className="table-wrap">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>משתתפים</th>
-                  <th>הודעה אחרונה</th>
-                  <th>תאריך</th>
-                  <th>פעולות</th>
-                </tr>
-              </thead>
-              <tbody>
-                {conversations.map(conv => (
-                  <>
-                    <tr key={conv.id}>
-                      <td style={{ fontWeight: 500 }}>{getParticipantNames(conv)}</td>
-                      <td style={{ color: 'var(--text-secondary)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {conv.lastMessage || '-'}
-                      </td>
-                      <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>
-                        {conv.lastMessageAt?.toDate?.()?.toLocaleDateString('he-IL') || '-'}
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', gap: 6 }}>
-                          <button className="btn btn-secondary btn-sm" onClick={() => toggleConv(conv.id)}>
-                            {expandedConv === conv.id ? <ChevronUp size={13} /> : <Eye size={13} />}
-                          </button>
-                          <button className="btn btn-danger btn-sm" onClick={() => deleteConv(conv.id)}>
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    {expandedConv === conv.id && (
-                      <tr key={`${conv.id}-messages`}>
-                        <td colSpan={4} style={{ padding: '0 24px 16px', background: '#F8F9FE' }}>
-                          <div style={{ borderRadius: 8, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                            <strong style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-                              הודעות ({messages[conv.id]?.length || 0})
-                            </strong>
-                            {messages[conv.id]?.map(msg => (
-                              <div key={msg.id} style={{ display: 'flex', gap: 10, fontSize: 13, padding: '6px 0', borderBottom: '1px solid var(--border-light)' }}>
-                                <span style={{ fontWeight: 600, color: 'var(--primary)', flexShrink: 0 }}>{msg.senderName}:</span>
-                                <span style={{ color: 'var(--text-secondary)' }}>{msg.text}</span>
-                                <span style={{ marginRight: 'auto', color: 'var(--text-muted)', fontSize: 11 }}>
-                                  {msg.createdAt?.toDate?.()?.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
-                                </span>
-                              </div>
-                            ))}
+          <div>
+            {conversations.map(conv => (
+              <div key={conv.id} className="conv-admin-item">
+                {/* Header Row */}
+                <div className="conv-admin-header">
+                  <div className="conv-admin-participants">
+                    <div className="conv-admin-avatars">
+                      <div className="conv-admin-avatar">{Object.values(conv.participantNames || {})[0]?.[0] || '?'}</div>
+                      <div className="conv-admin-avatar" style={{ marginRight: -8 }}>{Object.values(conv.participantNames || {})[1]?.[0] || '?'}</div>
+                    </div>
+                    <div>
+                      <div className="conv-admin-names">{getParticipantNames(conv)}</div>
+                      <div className="conv-admin-last">{conv.lastMessage || 'שיחה ריקה'}</div>
+                    </div>
+                  </div>
+                  <div className="conv-admin-meta">
+                    <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>
+                      {conv.lastMessageAt?.toDate?.()?.toLocaleDateString('he-IL') || '-'}
+                    </span>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button className="btn btn-secondary btn-sm" onClick={() => loadMessages(conv.id)}
+                        title="צפה בהודעות">
+                        {expandedConv === conv.id ? <EyeOff size={14} /> : <Eye size={14} />}
+                        {expandedConv === conv.id ? 'סגור' : 'צפה'}
+                      </button>
+                      <button className="btn btn-danger btn-sm" onClick={() => deleteConv(conv.id)} title="מחק שיחה">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Messages Panel */}
+                {expandedConv === conv.id && (
+                  <div className="conv-admin-messages">
+                    <div className="conv-admin-messages-header">
+                      <MessageCircle size={14} />
+                      <span>{messages[conv.id]?.length || 0} הודעות</span>
+                    </div>
+                    {loadingMsgs ? (
+                      <div style={{ padding: 20, textAlign: 'center' }}>
+                        <span className="spinner" style={{ width: 20, height: 20, margin: 'auto', display: 'block' }} />
+                      </div>
+                    ) : messages[conv.id]?.length === 0 ? (
+                      <p style={{ padding: 16, color: 'var(--text-muted)', fontSize: 13 }}>אין הודעות בשיחה זו</p>
+                    ) : (
+                      <div className="conv-admin-chat">
+                        {messages[conv.id]?.map(msg => (
+                          <div key={msg.id} className="admin-message-row">
+                            <div className="admin-message-sender">{msg.senderName || 'משתמש'}</div>
+                            <div className="admin-message-text">{msg.text}</div>
+                            <div className="admin-message-time">
+                              {msg.createdAt?.toDate?.()?.toLocaleString('he-IL', {
+                                hour: '2-digit', minute: '2-digit',
+                                day: '2-digit', month: '2-digit'
+                              }) || ''}
+                            </div>
                           </div>
-                        </td>
-                      </tr>
+                        ))}
+                      </div>
                     )}
-                  </>
-                ))}
-              </tbody>
-            </table>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         )}
       </div>

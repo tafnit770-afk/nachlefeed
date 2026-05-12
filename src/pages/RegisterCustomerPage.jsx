@@ -24,47 +24,54 @@ export default function RegisterCustomerPage() {
     setLoading(true);
     try {
       await registerCustomer(form);
-      toast.success('נרשמת בהצלחה!');
+      toast.success('נרשמת בהצלחה! ברוך הבא 🎉');
       navigate('/');
     } catch (err) {
-      toast.error(err.message || 'שגיאה בהרשמה');
+      if (err.code === 'auth/email-already-in-use') toast.error('האימייל כבר רשום');
+      else if (err.code === 'auth/weak-password') toast.error('סיסמה חלשה מדי');
+      else toast.error(err.message || 'שגיאה בהרשמה');
     } finally {
       setLoading(false);
     }
   };
 
-  const F = ({ label, icon: Icon, k, type = 'text', placeholder }) => (
-    <div className="input-group">
-      <label>{label}</label>
-      <div className="input-icon-wrapper">
-        <Icon size={16} className="input-icon" />
-        <input type={type} className="input-field input-with-icon" placeholder={placeholder}
-          value={form[k]} onChange={e => update(k, e.target.value)} required />
-      </div>
-    </div>
-  );
-
   return (
     <div className="auth-page">
       <div className="auth-card" style={{ maxWidth: 520 }}>
-        <div className="auth-logo"><div className="auth-logo-icon">מ</div><span>NachleFeed</span></div>
+        <div className="auth-logo"><div className="auth-logo-icon">נ</div><span>NachleFeed</span></div>
         <h1 className="auth-title">הרשמה כלקוח</h1>
         <p className="auth-subtitle">צור חשבון חדש ומצא ספקי שירות מעולים</p>
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-grid-2">
-            <F label="שם פרטי" icon={User} k="firstName" placeholder="ישראל" />
-            <F label="שם משפחה" icon={User} k="lastName" placeholder="ישראלי" />
+            <div className="input-group"><label>שם פרטי *</label>
+              <div className="input-icon-wrapper"><User size={16} className="input-icon" />
+                <input className="input-field input-with-icon" placeholder="ישראל" value={form.firstName} onChange={e => update('firstName', e.target.value)} required /></div></div>
+            <div className="input-group"><label>שם משפחה *</label>
+              <div className="input-icon-wrapper"><User size={16} className="input-icon" />
+                <input className="input-field input-with-icon" placeholder="ישראלי" value={form.lastName} onChange={e => update('lastName', e.target.value)} required /></div></div>
           </div>
-          <F label="שם משתמש" icon={AtSign} k="username" placeholder="israel123" />
-          <F label="אימייל" icon={Mail} k="email" type="email" placeholder="your@email.com" />
-          <F label="טלפון" icon={Phone} k="phone" placeholder="050-0000000" />
-          <F label="כתובת" icon={MapPin} k="address" placeholder="תל אביב, רחוב הרצל 1" />
-          <F label="סיסמה" icon={Lock} k="password" type="password" placeholder="••••••••" />
-          <F label="אימות סיסמה" icon={Lock} k="confirmPassword" type="password" placeholder="••••••••" />
+          <div className="input-group"><label>שם משתמש *</label>
+            <div className="input-icon-wrapper"><AtSign size={16} className="input-icon" />
+              <input className="input-field input-with-icon" placeholder="israel123" value={form.username} onChange={e => update('username', e.target.value)} required /></div></div>
+          <div className="input-group"><label>אימייל *</label>
+            <div className="input-icon-wrapper"><Mail size={16} className="input-icon" />
+              <input type="email" className="input-field input-with-icon" placeholder="your@email.com" value={form.email} onChange={e => update('email', e.target.value)} required /></div></div>
+          <div className="input-group"><label>טלפון</label>
+            <div className="input-icon-wrapper"><Phone size={16} className="input-icon" />
+              <input className="input-field input-with-icon" placeholder="050-0000000" value={form.phone} onChange={e => update('phone', e.target.value)} /></div></div>
+          <div className="input-group"><label>כתובת</label>
+            <div className="input-icon-wrapper"><MapPin size={16} className="input-icon" />
+              <input className="input-field input-with-icon" placeholder="תל אביב" value={form.address} onChange={e => update('address', e.target.value)} /></div></div>
+          <div className="input-group"><label>סיסמה *</label>
+            <div className="input-icon-wrapper"><Lock size={16} className="input-icon" />
+              <input type="password" className="input-field input-with-icon" placeholder="לפחות 6 תווים" value={form.password} onChange={e => update('password', e.target.value)} required /></div></div>
+          <div className="input-group"><label>אימות סיסמה *</label>
+            <div className="input-icon-wrapper"><Lock size={16} className="input-icon" />
+              <input type="password" className="input-field input-with-icon" placeholder="••••••••" value={form.confirmPassword} onChange={e => update('confirmPassword', e.target.value)} required /></div></div>
 
           <button type="submit" className="btn btn-primary btn-lg w-full" disabled={loading} style={{ marginTop: 8 }}>
-            {loading ? <span className="spinner" /> : <><UserPlus size={18} /> הרשמה</>}
+            {loading ? <><span className="spinner" style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: 'white' }} /> מרשים...</> : <><UserPlus size={18} /> הרשמה</>}
           </button>
         </form>
 
