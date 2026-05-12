@@ -12,7 +12,6 @@ import { auth, db } from '../firebase/config';
 import { trackSignup } from '../utils/analytics';
 
 const AuthContext = createContext();
-
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
@@ -24,8 +23,10 @@ export const AuthProvider = ({ children }) => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
       if (user) {
-        const snap = await getDoc(doc(db, 'users', user.uid));
-        if (snap.exists()) setUserProfile(snap.data());
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          if (snap.exists()) setUserProfile(snap.data());
+        } catch (e) { console.error('Profile load error:', e); }
       } else {
         setUserProfile(null);
       }
@@ -34,19 +35,17 @@ export const AuthProvider = ({ children }) => {
     return unsub;
   }, []);
 
-  const checkUsernameUnique = async (username) => {
-    const q = query(collection(db, 'users'), where('username', '==', username));
-    const snap = await getDocs(q);
-    return snap.empty;
-  };
-
   const registerCustomer = async ({ email, password, firstName, lastName, username, phone, address }) => {
-    const unique = await checkUsernameUnique(username);
-    if (!unique) throw new Error('שם המשתמש כבר תפוס');
+    // יצירת משתמש ב-Auth קודם
     const { user } = await createUserWithEmailAndPassword(auth, email, password);
+    
+    // עכשיו המשתמש מחובר — אפשר לכתוב ל-Firestore
     const profile = {
-      uid: user.uid, email, firstName, lastName, username, phone, address,
+      uid: user.uid, email, firstName, lastName,
+      username: username || email.split('@')[0],
+      phone: phone || '', address: address || '',
       role: 'customer', createdAt: serverTimestamp(),
+      favorites: [],
     };
     await setDoc(doc(db, 'users', user.uid), profile);
     trackSignup(user.uid);
@@ -55,19 +54,29 @@ export const AuthProvider = ({ children }) => {
   };
 
   const registerProvider = async ({ email, password, firstName, lastName, username, phone, description, categories, location, priceRange, profileImageUrl }) => {
-    const unique = await checkUsernameUnique(username);
-    if (!unique) throw new Error('שם המשתמש כבר תפוס');
+    // יצירת משתמש ב-Auth קודם
     const { user } = await createUserWithEmailAndPassword(auth, email, password);
+
+    // עכשיו המשתמש מחובר — אפשר לכתוב ל-Firestore
     const profile = {
-      uid: user.uid, email, firstName, lastName, username, phone,
+      uid: user.uid, email, firstName, lastName,
+      username: username || email.split('@')[0],
+      phone: phone || '',
       role: 'provider', createdAt: serverTimestamp(),
     };
     const providerData = {
-      uid: user.uid, email, firstName, lastName, username, phone,
-      description, categories, location, priceRange,
+      uid: user.uid, email, firstName, lastName,
+      username: username || email.split('@')[0],
+      phone: phone || '',
+      description: description || '',
+      categories: categories || [],
+      location: location || '',
+      priceRange: priceRange || '',
       profileImageUrl: profileImageUrl || '',
-      rating: 0, reviewCount: 0, createdAt: serverTimestamp(),
+      rating: 0, reviewCount: 0,
+      createdAt: serverTimestamp(),
     };
+
     await setDoc(doc(db, 'users', user.uid), profile);
     await setDoc(doc(db, 'providers', user.uid), providerData);
     trackSignup(user.uid);
@@ -77,8 +86,10 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const { user } = await signInWithEmailAndPassword(auth, email, password);
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    if (snap.exists()) setUserProfile(snap.data());
+    try {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (snap.exists()) setUserProfile(snap.data());
+    } catch (e) { console.error('Login profile error:', e); }
     return user;
   };
 
@@ -90,6 +101,5 @@ export const AuthProvider = ({ children }) => {
   const resetPassword = (email) => sendPasswordResetEmail(auth, email);
 
   const value = { currentUser, userProfile, loading, login, logout, registerCustomer, registerProvider, resetPassword };
-
   return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 };
