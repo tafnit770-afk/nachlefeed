@@ -38,7 +38,7 @@ export default function RegisterCustomerPage() {
   return (
     <div className="auth-page">
       <div className="auth-card" style={{ maxWidth: 520 }}>
-        <div className="auth-logo"><div className="auth-logo-icon">נ</div><span>NachleFeed</span></div>
+        <div className="auth-logo"><img src="/logo.png" alt="NachleFeed" style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "contain", border: "2px solid #eee", padding: 4, background: "white" }} />
         <h1 className="auth-title">הרשמה כלקוח</h1>
         <p className="auth-subtitle">צור חשבון חדש ומצא ספקי שירות מעולים</p>
 

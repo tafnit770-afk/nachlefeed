@@ -33,3 +33,19 @@
 .admin-chart-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--text-secondary); }
 
 @media (max-width: 900px) { .admin-charts { grid-template-columns: 1fr; } }
+
+/* Updated KPI cards */
+.kpi-card {
+  transition: all 0.25s cubic-bezier(.4,0,.2,1);
+  border-left: 3px solid transparent;
+}
+.kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-left-color: var(--primary);
+}
+.kpi-icon {
+  background: linear-gradient(135deg, var(--primary-bg), #DDE5FF) !important;
+  transition: transform 0.2s;
+}
+.kpi-card:hover .kpi-icon { transform: scale(1.1) rotate(-5deg); }

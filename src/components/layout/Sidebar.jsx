@@ -34,7 +34,7 @@ export default function Sidebar({ isOpen, onClose }) {
       <aside className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}>
         {/* Logo */}
         <div className="sidebar-logo">
-          <div className="logo-icon">מ</div>
+          <img src="/logo.png" alt="NachleFeed" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'contain', background: 'white', padding: 2 }} />
           <span className="logo-text">NachleFeed</span>
           <button className="sidebar-close" onClick={onClose}><ChevronLeft size={18} /></button>
         </div>

@@ -107,8 +107,8 @@ export default function HomePage() {
       <section className="cta-section">
         <h2>ספק שירות? הצטרף אלינו</h2>
         <p>הגע ללקוחות חדשים, נהל את הפרופיל שלך וצמח עם NachleFeed</p>
-        <button className="btn btn-primary btn-lg" onClick={() => navigate('/register-provider')}>
-          הרשמה כספק שירות
+        <button className="btn btn-cta" onClick={() => navigate('/register-provider')}>
+          הרשמה כספק שירות ←
         </button>
       </section>
     </div>

@@ -23,6 +23,13 @@ export default function Header({ onMenuOpen }) {
           <Menu size={22} />
         </button>
 
+        {/* Logo - visible on mobile */}
+        <Link to="/" className="header-logo-mobile">
+          <img src="/logo.png" alt="NachleFeed" style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'contain', border: '2px solid #eee', background: 'white', padding: 2 }} />
+        </Link>
+          <Menu size={22} />
+        </button>
+
         {/* Search */}
         <form className="header-search" onSubmit={handleSearch}>
           <Search size={16} className="header-search-icon" />

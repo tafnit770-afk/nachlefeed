@@ -30,7 +30,7 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="admin-logo">
-          <div className="logo-icon" style={{ width: 32, height: 32, background: 'var(--primary)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 800, color: 'white', flexShrink: 0 }}>נ</div>
+          <img src="/logo.png" alt="NachleFeed" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'contain', background: 'white', padding: 2, flexShrink: 0 }} />
           <span>NachleFeed</span>
           <span className="admin-badge">Admin</span>
         </div>
