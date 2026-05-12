@@ -1,0 +1,17 @@
+/* src/components/layout/MainLayout.css */
+.page-wrapper { display: flex; min-height: 100vh; }
+.main-content {
+  flex: 1;
+  margin-right: var(--sidebar-width);
+  display: flex; flex-direction: column;
+  min-height: 100vh;
+}
+.page-body {
+  flex: 1;
+  padding: 24px;
+  margin-top: var(--header-height);
+}
+@media (max-width: 768px) {
+  .main-content { margin-right: 0; }
+  .page-body { padding: 16px; }
+}

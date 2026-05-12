@@ -1,0 +1,86 @@
+/* src/pages/AuthPages.css */
+.auth-page {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #4338CA 100%);
+  padding: 24px;
+}
+
+.auth-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: 40px;
+  width: 100%; max-width: 440px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: fadeIn 0.4s ease;
+}
+
+.auth-logo {
+  display: flex; align-items: center; gap: 12px;
+  justify-content: center; margin-bottom: 24px;
+  font-size: 24px; font-weight: 800;
+  color: var(--bg-sidebar);
+}
+
+.auth-logo-icon {
+  width: 44px; height: 44px;
+  background: var(--primary);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 800; color: white;
+}
+
+.auth-title {
+  font-size: 26px; font-weight: 800;
+  text-align: center; color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.auth-subtitle {
+  font-size: 14px; color: var(--text-secondary);
+  text-align: center; margin-bottom: 28px;
+}
+
+.auth-form { display: flex; flex-direction: column; gap: 16px; }
+
+.input-icon-wrapper { position: relative; }
+.input-icon {
+  position: absolute;
+  right: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--text-muted);
+}
+.input-with-icon { padding-right: 38px !important; }
+
+.auth-forgot {
+  text-align: left;
+  font-size: 13px;
+}
+.auth-forgot a { color: var(--primary); font-weight: 600; }
+
+.auth-divider {
+  text-align: center; position: relative;
+  margin: 20px 0;
+  color: var(--text-muted); font-size: 13px;
+}
+.auth-divider::before, .auth-divider::after {
+  content: ''; position: absolute;
+  top: 50%; width: 42%; height: 1px;
+  background: var(--border);
+}
+.auth-divider::before { right: 0; }
+.auth-divider::after { left: 0; }
+
+.auth-links {
+  text-align: center;
+  font-size: 14px; color: var(--text-secondary);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.auth-links a { color: var(--primary); font-weight: 600; }
+.auth-links a:hover { text-decoration: underline; }
+
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+@media (max-width: 480px) {
+  .auth-card { padding: 28px 20px; }
+  .form-grid-2 { grid-template-columns: 1fr; }
+}
