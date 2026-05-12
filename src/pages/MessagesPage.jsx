@@ -3,12 +3,12 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   collection, query, where, onSnapshot, orderBy, addDoc,
-  serverTimestamp, doc, updateDoc, getDocs, getDoc
+  serverTimestamp, doc, updateDoc
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuth } from '../contexts/AuthContext';
 import { trackMessage } from '../utils/analytics';
-import { Send, MessageCircle, ArrowRight } from 'lucide-react';
+import { Send, MessageCircle, ArrowRight, Paperclip, X, Image, FileText } from 'lucide-react';
 import './MessagesPage.css';
 
 export default function MessagesPage() {
@@ -22,7 +22,9 @@ export default function MessagesPage() {
   const [sending, setSending] = useState(false);
   const [activeConv, setActiveConv] = useState(conversationId || null);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
+  const [attachment, setAttachment] = useState(null); // { type, name, data, url }
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   // Load conversations
   useEffect(() => {
@@ -35,27 +37,21 @@ export default function MessagesPage() {
       const convs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       convs.sort((a, b) => (b.lastMessageAt?.seconds || 0) - (a.lastMessageAt?.seconds || 0));
       setConversations(convs);
-    }, err => console.error('Conversations error:', err));
+    });
     return unsub;
   }, [currentUser]);
 
-  // Load messages for active conversation
+  // Load messages
   useEffect(() => {
     if (!activeConv) return;
     setLoadingMsgs(true);
-    // Query without orderBy to avoid index requirement
     const q = query(
       collection(db, 'messages'),
       where('conversationId', '==', activeConv)
     );
     const unsub = onSnapshot(q, snap => {
       const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      // Sort client-side by createdAt
-      msgs.sort((a, b) => {
-        const aTime = a.createdAt?.seconds || 0;
-        const bTime = b.createdAt?.seconds || 0;
-        return aTime - bTime;
-      });
+      msgs.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
       setMessages(msgs);
       setLoadingMsgs(false);
       setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
@@ -70,28 +66,65 @@ export default function MessagesPage() {
     if (conversationId) setActiveConv(conversationId);
   }, [conversationId]);
 
+  // Handle file selection
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    if (file.size > maxSize) {
+      alert('הקובץ גדול מדי. מקסימום 2MB');
+      return;
+    }
+
+    const isImage = file.type.startsWith('image/');
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setAttachment({
+        type: isImage ? 'image' : 'file',
+        name: file.name,
+        data: ev.target.result, // base64
+        mimeType: file.type,
+      });
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !activeConv || sending) return;
+    if ((!newMessage.trim() && !attachment) || !activeConv || sending) return;
     const msgText = newMessage.trim();
     setNewMessage('');
+    const currentAttachment = attachment;
+    setAttachment(null);
     setSending(true);
     try {
-      await addDoc(collection(db, 'messages'), {
+      const msgData = {
         conversationId: activeConv,
         senderId: currentUser.uid,
         senderName: `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim(),
         text: msgText,
         createdAt: serverTimestamp(),
-      });
+      };
+      if (currentAttachment) {
+        msgData.attachment = {
+          type: currentAttachment.type,
+          name: currentAttachment.name,
+          data: currentAttachment.data,
+          mimeType: currentAttachment.mimeType,
+        };
+      }
+      await addDoc(collection(db, 'messages'), msgData);
       await updateDoc(doc(db, 'conversations', activeConv), {
-        lastMessage: msgText,
+        lastMessage: currentAttachment ? `📎 ${currentAttachment.name}` : msgText,
         lastMessageAt: serverTimestamp(),
       });
       trackMessage(currentUser.uid);
     } catch (err) {
       console.error('Send error:', err);
       setNewMessage(msgText);
+      setAttachment(currentAttachment);
     } finally {
       setSending(false);
     }
@@ -105,7 +138,7 @@ export default function MessagesPage() {
   };
 
   const getOtherParticipantName = (conv) => {
-    if (!conv || !conv.participants) return 'משתמש';
+    if (!conv?.participants) return 'משתמש';
     const otherId = conv.participants.find(p => p !== currentUser?.uid);
     return conv.participantNames?.[otherId] || 'משתמש';
   };
@@ -129,7 +162,6 @@ export default function MessagesPage() {
           <div className="conv-empty">
             <MessageCircle size={40} color="var(--text-muted)" />
             <p>אין שיחות עדיין</p>
-            <p style={{ fontSize: 12 }}>עבור לפרופיל ספק ולחץ "שלח הודעה"</p>
           </div>
         ) : (
           <div className="conversations-list">
@@ -154,7 +186,6 @@ export default function MessagesPage() {
           <div className="chat-empty">
             <MessageCircle size={60} color="var(--text-muted)" />
             <h3>בחר שיחה</h3>
-            <p>בחר שיחה מהרשימה כדי להתחיל</p>
           </div>
         ) : (
           <>
@@ -182,7 +213,25 @@ export default function MessagesPage() {
                 messages.map(msg => (
                   <div key={msg.id}
                     className={`message-bubble ${msg.senderId === currentUser.uid ? 'mine' : 'theirs'}`}>
-                    <div className="message-text">{msg.text}</div>
+                    {msg.text && <div className="message-text">{msg.text}</div>}
+                    {msg.attachment && (
+                      <div className="message-attachment">
+                        {msg.attachment.type === 'image' ? (
+                          <img
+                            src={msg.attachment.data}
+                            alt={msg.attachment.name}
+                            className="message-image"
+                            onClick={() => window.open(msg.attachment.data, '_blank')}
+                          />
+                        ) : (
+                          <a href={msg.attachment.data} download={msg.attachment.name}
+                            className="message-file">
+                            <FileText size={18} />
+                            <span>{msg.attachment.name}</span>
+                          </a>
+                        )}
+                      </div>
+                    )}
                     <div className="message-time">
                       {msg.createdAt?.toDate?.()?.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) || ''}
                     </div>
@@ -192,7 +241,30 @@ export default function MessagesPage() {
               <div ref={messagesEndRef} />
             </div>
 
+            {/* Attachment Preview */}
+            {attachment && (
+              <div className="attachment-preview">
+                <div className="attachment-preview-inner">
+                  {attachment.type === 'image'
+                    ? <><Image size={16} /><span>{attachment.name}</span></>
+                    : <><FileText size={16} /><span>{attachment.name}</span></>
+                  }
+                  <button onClick={() => setAttachment(null)} className="attachment-remove">
+                    <X size={14} />
+                  </button>
+                </div>
+              </div>
+            )}
+
             <form className="chat-input-area" onSubmit={sendMessage}>
+              <input type="file" ref={fileInputRef} hidden
+                accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+                onChange={handleFileSelect} />
+              <button type="button" className="chat-attach-btn"
+                onClick={() => fileInputRef.current?.click()}
+                title="צרף קובץ או תמונה">
+                <Paperclip size={18} />
+              </button>
               <input
                 className="chat-input"
                 placeholder="כתוב הודעה... (Enter לשליחה)"
@@ -200,10 +272,9 @@ export default function MessagesPage() {
                 onChange={e => setNewMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
                 disabled={sending}
-                autoFocus
               />
               <button type="submit" className="chat-send-btn"
-                disabled={sending || !newMessage.trim()}>
+                disabled={sending || (!newMessage.trim() && !attachment)}>
                 {sending ? <span className="spinner" style={{ width: 16, height: 16 }} /> : <Send size={18} />}
               </button>
             </form>

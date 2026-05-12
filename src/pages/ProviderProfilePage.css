@@ -36,7 +36,15 @@
 }
 .rating-number { font-size: 20px; font-weight: 800; color: #92400E; }
 
-.review-item {
+.btn-whatsapp {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 600;
+  background: #25D366; color: white;
+  transition: all 0.2s; cursor: pointer; border: none;
+  text-decoration: none;
+}
+.btn-whatsapp:hover { background: #128C7E; transform: translateY(-1px); box-shadow: var(--shadow-md); }
   padding: 14px; border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
 }
