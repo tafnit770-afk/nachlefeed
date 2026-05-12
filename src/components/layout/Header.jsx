@@ -2,11 +2,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { Bell, Menu, MessageCircle, Search } from 'lucide-react';
+import { Menu, MessageCircle, Search } from 'lucide-react';
 import './Header.css';
 
 export default function Header({ onMenuOpen }) {
-  const { currentUser, userProfile, logout } = useAuth();
+  const { currentUser, userProfile } = useAuth();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -18,19 +18,14 @@ export default function Header({ onMenuOpen }) {
   return (
     <header className="header">
       <div className="header-inner">
-        {/* Mobile Menu */}
         <button className="header-menu-btn" onClick={onMenuOpen}>
           <Menu size={22} />
         </button>
 
-        {/* Logo - visible on mobile */}
         <Link to="/" className="header-logo-mobile">
           <img src="/logo.png" alt="NachleFeed" style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'contain', border: '2px solid #eee', background: 'white', padding: 2 }} />
         </Link>
-          <Menu size={22} />
-        </button>
 
-        {/* Search */}
         <form className="header-search" onSubmit={handleSearch}>
           <Search size={16} className="header-search-icon" />
           <input
@@ -42,7 +37,6 @@ export default function Header({ onMenuOpen }) {
           />
         </form>
 
-        {/* Actions */}
         <div className="header-actions">
           {currentUser ? (
             <>
