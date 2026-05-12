@@ -1,7 +1,8 @@
 // src/components/layout/AdminLayout.jsx
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { LayoutDashboard, Users, Store, MessageCircle, LogOut, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Users, Store, MessageCircle, LogOut, ChevronRight, Menu, X } from 'lucide-react';
 import './AdminLayout.css';
 
 const adminNav = [
@@ -14,28 +15,39 @@ const adminNav = [
 export default function AdminLayout() {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = async () => { await logout(); navigate('/login'); };
 
+  const currentPage = adminNav.find(n => n.exact ? location.pathname === n.to : location.pathname.startsWith(n.to));
+
   return (
     <div className="admin-wrapper">
-      <aside className="admin-sidebar">
+      {/* Mobile overlay */}
+      <div className={`admin-overlay ${sidebarOpen ? 'visible' : ''}`} onClick={() => setSidebarOpen(false)} />
+
+      {/* Sidebar */}
+      <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="admin-logo">
-          <div className="logo-icon">מ</div>
+          <div className="logo-icon" style={{ width: 32, height: 32, background: 'var(--primary)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 800, color: 'white', flexShrink: 0 }}>נ</div>
           <span>NachleFeed</span>
           <span className="admin-badge">Admin</span>
         </div>
+
         <nav className="admin-nav">
           {adminNav.map(item => (
             <NavLink key={item.to} to={item.to} end={item.exact}
-              className={({ isActive }) => `admin-link ${isActive ? 'active' : ''}`}>
+              className={({ isActive }) => `admin-link ${isActive ? 'active' : ''}`}
+              onClick={() => setSidebarOpen(false)}>
               <item.icon size={18} />
               <span>{item.label}</span>
             </NavLink>
           ))}
         </nav>
+
         <div className="admin-sidebar-bottom">
-          <NavLink to="/" className="admin-link">
+          <NavLink to="/" className="admin-link" onClick={() => setSidebarOpen(false)}>
             <ChevronRight size={18} />
             <span>חזרה לאתר</span>
           </NavLink>
@@ -45,9 +57,21 @@ export default function AdminLayout() {
           </button>
         </div>
       </aside>
-      <main className="admin-main">
-        <Outlet />
-      </main>
+
+      {/* Main */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+        {/* Mobile Header */}
+        <div className="admin-mobile-header">
+          <button className="admin-hamburger" onClick={() => setSidebarOpen(true)}>
+            <Menu size={22} />
+          </button>
+          <h2>{currentPage?.label || 'פאנל ניהול'}</h2>
+        </div>
+
+        <main className="admin-main">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

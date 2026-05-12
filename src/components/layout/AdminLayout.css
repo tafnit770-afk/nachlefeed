@@ -51,10 +51,57 @@
 
 .admin-main {
   flex: 1; padding: 32px;
-  overflow-y: auto;
+  overflow-y: auto; min-width: 0;
 }
 
+/* Mobile hamburger button */
+.admin-mobile-header {
+  display: none;
+  align-items: center; gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-sidebar);
+  position: sticky; top: 0; z-index: 90;
+}
+.admin-mobile-header h2 {
+  color: white; font-size: 16px; font-weight: 700; flex: 1;
+}
+.admin-hamburger {
+  background: transparent; border: none;
+  color: white; cursor: pointer;
+  padding: 6px; border-radius: 6px;
+  display: flex; align-items: center;
+}
+.admin-hamburger:hover { background: rgba(255,255,255,0.1); }
+
+/* Mobile overlay */
+.admin-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 199;
+}
+.admin-overlay.visible { display: block; }
+
 @media (max-width: 768px) {
-  .admin-sidebar { display: none; }
-  .admin-main { padding: 16px; }
+  .admin-wrapper { flex-direction: column; }
+
+  .admin-sidebar {
+    position: fixed;
+    top: 0; right: 0;
+    height: 100vh;
+    z-index: 200;
+    transform: translateX(110%);
+    transition: transform 0.3s ease;
+    width: 260px;
+  }
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .admin-mobile-header { display: flex; }
+
+  .admin-main {
+    padding: 16px;
+    margin-top: 0;
+  }
 }
