@@ -35,10 +35,11 @@ export default function AdminConversations() {
       try {
         const snap = await getDocs(query(
           collection(db, 'messages'),
-          where('conversationId', '==', convId),
-          orderBy('createdAt', 'asc')
+          where('conversationId', '==', convId)
         ));
-        setMessages(p => ({ ...p, [convId]: snap.docs.map(d => ({ id: d.id, ...d.data() })) }));
+        const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        msgs.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+        setMessages(p => ({ ...p, [convId]: msgs }));
       } catch (e) { console.error(e); }
     }
     setLoadingMsgs(false);

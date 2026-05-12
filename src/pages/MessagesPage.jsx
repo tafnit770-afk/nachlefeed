@@ -43,13 +43,20 @@ export default function MessagesPage() {
   useEffect(() => {
     if (!activeConv) return;
     setLoadingMsgs(true);
+    // Query without orderBy to avoid index requirement
     const q = query(
       collection(db, 'messages'),
-      where('conversationId', '==', activeConv),
-      orderBy('createdAt', 'asc')
+      where('conversationId', '==', activeConv)
     );
     const unsub = onSnapshot(q, snap => {
-      setMessages(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      // Sort client-side by createdAt
+      msgs.sort((a, b) => {
+        const aTime = a.createdAt?.seconds || 0;
+        const bTime = b.createdAt?.seconds || 0;
+        return aTime - bTime;
+      });
+      setMessages(msgs);
       setLoadingMsgs(false);
       setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     }, err => {
