@@ -30,7 +30,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
   return (
     <>
-      {isOpen && <div className="sidebar-overlay" onClick={onClose} />}
+      <div className={`sidebar-overlay ${isOpen ? 'visible' : ''}`} onClick={onClose} />
       <aside className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}>
         {/* Logo */}
         <div className="sidebar-logo">
