@@ -29,7 +29,11 @@ export default function ForgotPasswordPage() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <div className="auth-logo"><img src="/logo.png" alt="NachleFeed" style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "contain", border: "2px solid #eee", padding: 4, background: "white" }} />
+        <div className="auth-logo">
+          <img src="/logo.png" alt="NachleFeed" style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'contain', border: '2px solid #eee', padding: 4, background: 'white' }} />
+          <span>NachleFeed</span>
+        </div>
+
         {sent ? (
           <div style={{ textAlign: 'center', padding: '20px 0' }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>📧</div>
@@ -57,9 +61,11 @@ export default function ForgotPasswordPage() {
               </button>
             </form>
             <div className="auth-links" style={{ marginTop: 20 }}>
-              <p><Link to="/login" style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
-                <ArrowRight size={16} /> חזרה להתחברות
-              </Link></p>
+              <p>
+                <Link to="/login" style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
+                  <ArrowRight size={16} /> חזרה להתחברות
+                </Link>
+              </p>
             </div>
           </>
         )}
