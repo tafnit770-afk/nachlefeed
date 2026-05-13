@@ -32,23 +32,65 @@
   --radius-xl: 28px;
   --sidebar-width: 260px;
   --header-height: 64px;
-  --font: 'Inter', 'Segoe UI', Arial, sans-serif;
+  --font: 'Noto Sans Hebrew', sans-serif;
+
+  /* Typography weights */
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-extrabold: 800;
+  --fw-black: 900;
 }
 
-html { direction: rtl; font-family: var(--font); }
+html { direction: rtl; font-family: 'Noto Sans Hebrew', sans-serif; }
 
 body {
   background: var(--bg);
   color: var(--text-primary);
-  font-family: var(--font);
+  font-family: 'Noto Sans Hebrew', sans-serif;
   font-size: 15px;
+  font-weight: var(--fw-regular);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
 a { color: inherit; text-decoration: none; }
-button { font-family: var(--font); cursor: pointer; border: none; outline: none; }
-input, textarea, select { font-family: var(--font); }
+button { font-family: 'Noto Sans Hebrew', sans-serif; cursor: pointer; border: none; outline: none; }
+input, textarea, select { font-family: 'Noto Sans Hebrew', sans-serif; }
+
+/* ===== TYPOGRAPHY SYSTEM ===== */
+
+/* כותרות ראשיות — Black/ExtraBold */
+h1 { font-weight: var(--fw-black); letter-spacing: -0.5px; line-height: 1.15; }
+h2 { font-weight: var(--fw-extrabold); letter-spacing: -0.3px; line-height: 1.2; }
+h3 { font-weight: var(--fw-bold); line-height: 1.3; }
+h4, h5, h6 { font-weight: var(--fw-semibold); }
+
+/* טקסט גוף — Regular */
+p { font-weight: var(--fw-regular); line-height: 1.7; }
+
+/* תוויות ומטא — Light */
+.text-light { font-weight: var(--fw-light); }
+.text-muted-label { font-weight: var(--fw-light); color: var(--text-muted); font-size: 13px; }
+
+/* ניווט — Medium */
+nav a, .nav-item { font-weight: var(--fw-medium); }
+
+/* כפתורים — SemiBold */
+.btn { font-weight: var(--fw-semibold); }
+
+/* תגיות/Badge — Bold */
+.badge { font-weight: var(--fw-bold); }
+
+/* מחירים וסטטיסטיקות — Black */
+.stat-number, .price-display { font-weight: var(--fw-black); }
+
+/* תיאורים — Light */
+.description-text { font-weight: var(--fw-light); line-height: 1.8; }
+
+/* ============================= */
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }

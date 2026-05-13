@@ -22,7 +22,7 @@
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 .logo-text {
-  font-size: 19px; font-weight: 800; color: white; flex: 1;
+  font-size: 19px; font-weight: var(--fw-extrabold); color: white; flex: 1;
   letter-spacing: -0.3px;
 }
 .sidebar-close {
@@ -51,7 +51,7 @@
 }
 .sidebar-user-info { flex: 1; min-width: 0; }
 .sidebar-user-name {
-  font-size: 14px; font-weight: 700; color: white;
+  font-size: 14px; font-weight: var(--fw-bold); color: white;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 2px; }
@@ -70,7 +70,7 @@
 .sidebar-link {
   display: flex; align-items: center; gap: 12px;
   padding: 11px 12px; border-radius: var(--radius-sm);
-  font-size: 14px; font-weight: 500;
+  font-size: 14px; font-weight: var(--fw-medium);
   color: rgba(255,255,255,0.55);
   transition: all 0.2s cubic-bezier(.4,0,.2,1);
   position: relative; overflow: hidden;
@@ -108,7 +108,7 @@
   width: 100%; padding: 10px 12px;
   background: transparent; border: none;
   color: rgba(255,255,255,0.45);
-  font-size: 14px; font-weight: 500;
+  font-size: 14px; font-weight: var(--fw-medium);
   border-radius: var(--radius-sm); cursor: pointer;
   transition: all 0.2s;
 }

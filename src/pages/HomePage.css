@@ -25,7 +25,7 @@
 
 .hero-content { position: relative; z-index: 1; }
 .hero-title {
-  font-size: 44px; font-weight: 900; color: white;
+  font-size: 44px; font-weight: var(--fw-black); color: white;
   line-height: 1.12; margin-bottom: 18px; letter-spacing: -0.5px;
 }
 .hero-title span {
@@ -93,7 +93,7 @@
   display: flex; justify-content: space-between;
   align-items: center; margin-bottom: 20px;
 }
-.section-title { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
+.section-title { font-size: 22px; font-weight: var(--fw-extrabold); letter-spacing: -0.3px; }
 .section-more {
   display: flex; align-items: center; gap: 4px;
   background: transparent; border: none;
@@ -126,7 +126,7 @@
 .category-card:hover::before { opacity: 1; }
 .category-icon { font-size: 30px; transition: transform 0.2s; }
 .category-card:hover .category-icon { transform: scale(1.18); }
-.category-name { font-size: 13px; font-weight: 700; position: relative; }
+.category-name { font-size: 13px; font-weight: var(--fw-bold); position: relative; }
 .category-count { font-size: 11px; color: var(--text-muted); position: relative; }
 
 /* Features */
@@ -169,7 +169,7 @@
   border-radius: 50%; background: rgba(255,255,255,0.08);
   top: -100px; right: -60px;
 }
-.cta-section h2 { font-size: 30px; font-weight: 900; letter-spacing: -0.5px; position: relative; }
+.cta-section h2 { font-size: 30px; font-weight: var(--fw-black); letter-spacing: -0.5px; position: relative; }
 .cta-section p { font-size: 16px; opacity: 0.88; max-width: 420px; position: relative; line-height: 1.7; }
 .cta-section .btn-cta {
   background: white; color: var(--accent-dark);
