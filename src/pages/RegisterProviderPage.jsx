@@ -3,8 +3,10 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
-import { User, Mail, Lock, Phone, MapPin, AtSign, DollarSign, FileText } from 'lucide-react';
+import { User, Mail, Lock, Phone, MapPin, AtSign, DollarSign, FileText, Search, X, Check } from 'lucide-react';
+import CitySearch from '../components/shared/CitySearch';
 import './AuthPages.css';
+import './RegisterProviderPage.css';
 
 const CATEGORIES = [
   'אינסטלטור', 'חשמלאי', 'טכנאי מזגנים', 'שיפוצניק', 'צבעי',
@@ -23,10 +25,11 @@ export default function RegisterProviderPage() {
   const { registerProvider } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [categorySearch, setCategorySearch] = useState('');
   const [form, setForm] = useState({
     firstName: '', lastName: '', username: '', email: '',
     phone: '', description: '', categories: [], location: '',
-    priceRange: '', password: '', confirmPassword: ''
+    address: '', priceRange: '', password: '', confirmPassword: ''
   });
 
   const update = (k, v) => setForm(p => ({ ...p, [k]: v }));
@@ -107,25 +110,99 @@ export default function RegisterProviderPage() {
                 style={{ resize: 'none', paddingTop: 10 }} /></div></div>
 
           <div className="form-grid-2">
-            <div className="input-group"><label>מיקום *</label>
+            <div className="input-group">
+              <label>עיר / ישוב *</label>
+              <CitySearch
+                value={form.location}
+                onChange={val => update('location', val)}
+                placeholder="חפש עיר..."
+                required
+              />
+            </div>
+            <div className="input-group"><label>כתובת</label>
               <div className="input-icon-wrapper"><MapPin size={16} className="input-icon" />
-                <input className="input-field input-with-icon" placeholder="תל אביב" value={form.location} onChange={e => update('location', e.target.value)} required /></div></div>
-            <div className="input-group"><label>טווח מחירים (₪/שעה)</label>
+                <input className="input-field input-with-icon" placeholder="רחוב, מספר בית" value={form.address} onChange={e => update('address', e.target.value)} /></div></div>
+          </div>
+
+          <div className="input-group"><label>טווח מחירים (₪/שעה)</label>
               <div className="input-icon-wrapper"><DollarSign size={16} className="input-icon" />
                 <input className="input-field input-with-icon" placeholder="150-250" value={form.priceRange} onChange={e => update('priceRange', e.target.value)} /></div></div>
-          </div>
 
           <div className="input-group">
             <label>קטגוריות שירות * <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(בחר אחת או יותר)</span></label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
-              {CATEGORIES.map(cat => (
-                <button key={cat} type="button" onClick={() => toggleCategory(cat)}
-                  className={`badge ${form.categories.includes(cat) ? 'badge-primary' : 'badge-gray'}`}
-                  style={{ cursor: 'pointer', padding: '6px 12px', fontSize: 13 }}>
-                  {cat}
+
+            {/* Smart Search */}
+            <div className="cat-search-wrapper">
+              <Search size={15} className="cat-search-icon" />
+              <input
+                className="input-field cat-search-input"
+                placeholder="חפש מה אתה עושה... (למשל: חשמל, ניקיון, בניה)"
+                value={categorySearch}
+                onChange={e => setCategorySearch(e.target.value)}
+                autoComplete="off"
+              />
+              {categorySearch && (
+                <button type="button" className="cat-search-clear" onClick={() => setCategorySearch('')}>
+                  <X size={14} />
                 </button>
-              ))}
+              )}
             </div>
+
+            {/* Search Results */}
+            {categorySearch.trim() && (() => {
+              const q = categorySearch.trim().toLowerCase();
+              const results = CATEGORIES.filter(cat =>
+                cat.toLowerCase().includes(q) ||
+                cat.toLowerCase().split('').some((_, i) =>
+                  cat.toLowerCase().substring(i).startsWith(q.substring(0, 2))
+                )
+              );
+              return results.length > 0 ? (
+                <div className="cat-results">
+                  {results.map(cat => (
+                    <button key={cat} type="button"
+                      className={`cat-result-item ${form.categories.includes(cat) ? 'selected' : ''}`}
+                      onClick={() => { toggleCategory(cat); setCategorySearch(''); }}>
+                      <span>{cat}</span>
+                      {form.categories.includes(cat) && <Check size={14} />}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="cat-no-results">לא נמצאה קטגוריה תואמת</div>
+              );
+            })()}
+
+            {/* Selected categories */}
+            {form.categories.length > 0 && (
+              <div className="cat-selected">
+                <div className="cat-selected-label">קטגוריות שנבחרו:</div>
+                <div className="cat-selected-tags">
+                  {form.categories.map(cat => (
+                    <span key={cat} className="cat-tag">
+                      {cat}
+                      <button type="button" onClick={() => toggleCategory(cat)}>
+                        <X size={12} />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* All categories (collapsed) */}
+            <details className="cat-all">
+              <summary>הצג את כל הקטגוריות ({CATEGORIES.length})</summary>
+              <div className="cat-all-grid">
+                {CATEGORIES.map(cat => (
+                  <button key={cat} type="button" onClick={() => toggleCategory(cat)}
+                    className={`cat-all-item ${form.categories.includes(cat) ? 'selected' : ''}`}>
+                    {form.categories.includes(cat) && <Check size={12} />}
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </details>
           </div>
 
           <div className="form-grid-2">

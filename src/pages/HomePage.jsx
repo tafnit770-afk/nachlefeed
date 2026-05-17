@@ -132,11 +132,20 @@ export default function HomePage() {
 
   return (
     <div className="home-page fade-in">
+      {/* Logo + Tagline above hero */}
+      <div className="hero-brand">
+        <img src="/logo.svg" alt="NachleFeed" className="hero-brand-logo" />
+        <div className="hero-brand-text">
+          <span className="hero-brand-name">NachleFeed</span>
+          <span className="hero-brand-tagline">כל המידע, מתי שצריך</span>
+        </div>
+      </div>
+
       {/* Hero */}
       <section className="hero">
         <div className="hero-content">
-          <h1 className="hero-title">מצא את הספק המושלם<br /><span>לכל שירות</span></h1>
-          <p className="hero-subtitle">אלפי ספקי שירות מקצועיים מחכים לך. מצא, השווה ותקשר ישירות.</p>
+          <h1 className="hero-title">תושבי נחלה היקרים,<br /><span>גלו את כל ספקי השירות</span><br />מאנ״ש שקיימים באזורכם</h1>
+          <p className="hero-subtitle">״נחל״ה ערבים זה לזה</p>
           <form className="hero-search" onSubmit={handleSearch}>
             <div className="hero-search-inner">
               <Search size={20} className="hero-search-icon" />
@@ -150,7 +159,7 @@ export default function HomePage() {
             <div className="hero-stat-divider" />
             <div className="hero-stat"><strong>12,000+</strong><span>לקוחות מרוצים</span></div>
             <div className="hero-stat-divider" />
-            <div className="hero-stat"><strong>4.8 ⭐</strong><span>דירוג ממוצע</span></div>
+            <div className="hero-stat"><strong>⭐ 4.8</strong><span>דירוג ממוצע</span></div>
           </div>
         </div>
         <div className="hero-illustration">

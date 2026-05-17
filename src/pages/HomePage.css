@@ -1,6 +1,27 @@
 /* HomePage */
 .home-page { display: flex; flex-direction: column; gap: 52px; }
 
+/* Hero Brand */
+.hero-brand {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 8px;
+}
+.hero-brand-logo {
+  width: 64px; height: 64px;
+  object-fit: contain; flex-shrink: 0;
+}
+.hero-brand-text {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.hero-brand-name {
+  font-size: 26px; font-weight: var(--fw-black);
+  color: var(--primary); letter-spacing: -0.5px; line-height: 1;
+}
+.hero-brand-tagline {
+  font-size: 14px; font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+}
+
 /* Hero */
 .hero {
   display: grid; grid-template-columns: 1fr 320px;
@@ -53,13 +74,20 @@
 }
 
 .hero-stats {
-  display: flex; align-items: center; gap: 28px;
-  margin-top: 30px; flex-wrap: wrap;
+  display: flex; align-items: center; gap: 20px;
+  margin-top: 28px; flex-wrap: nowrap;
 }
-.hero-stat { display: flex; flex-direction: column; gap: 2px; }
-.hero-stat strong { font-size: 24px; font-weight: 800; color: white; }
-.hero-stat span { font-size: 12px; color: rgba(255,255,255,0.55); }
-.hero-stat-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.15); }
+.hero-stat { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+.hero-stat strong { font-size: 20px; font-weight: 800; color: white; white-space: nowrap; }
+.hero-stat span { font-size: 11px; color: rgba(255,255,255,0.55); white-space: nowrap; }
+.hero-stat-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.2); flex-shrink: 0; }
+
+@media (max-width: 480px) {
+  .hero-stats { gap: 12px; }
+  .hero-stat strong { font-size: 16px; }
+  .hero-stat span { font-size: 10px; }
+  .hero-stat-divider { height: 24px; }
+}
 
 /* Hero illustration */
 .hero-illustration {
@@ -178,10 +206,13 @@
 @media (max-width: 900px) {
   .hero { grid-template-columns: 1fr; padding: 36px 24px; }
   .hero-illustration { display: none; }
-  .hero-title { font-size: 32px; }
+  .hero-title { font-size: 26px; }
   .features-section { grid-template-columns: 1fr; }
 }
 @media (max-width: 600px) {
+  .hero { padding: 28px 18px; }
+  .hero-title { font-size: 22px; }
+  .hero-subtitle { font-size: 15px; margin-bottom: 20px; }
   .categories-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .category-card { padding: 16px 8px; gap: 10px; border-radius: 14px; }
   .category-name { font-size: 13px; }

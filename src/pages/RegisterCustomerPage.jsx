@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { User, Mail, Lock, Phone, MapPin, AtSign, UserPlus } from 'lucide-react';
+import CitySearch from '../components/shared/CitySearch';
 import './AuthPages.css';
 
 export default function RegisterCustomerPage() {
@@ -63,9 +64,17 @@ export default function RegisterCustomerPage() {
           <div className="input-group"><label>טלפון</label>
             <div className="input-icon-wrapper"><Phone size={16} className="input-icon" />
               <input className="input-field input-with-icon" placeholder="050-0000000" value={form.phone} onChange={e => update('phone', e.target.value)} /></div></div>
+          <div className="input-group">
+            <label>עיר / ישוב</label>
+            <CitySearch
+              value={form.city || ''}
+              onChange={val => update('city', val)}
+              placeholder="חפש עיר או ישוב..."
+            />
+          </div>
           <div className="input-group"><label>כתובת</label>
             <div className="input-icon-wrapper"><MapPin size={16} className="input-icon" />
-              <input className="input-field input-with-icon" placeholder="תל אביב" value={form.address} onChange={e => update('address', e.target.value)} /></div></div>
+              <input className="input-field input-with-icon" placeholder="רחוב, מספר בית" value={form.address} onChange={e => update('address', e.target.value)} /></div></div>
           <div className="input-group"><label>סיסמה *</label>
             <div className="input-icon-wrapper"><Lock size={16} className="input-icon" />
               <input type="password" className="input-field input-with-icon" placeholder="לפחות 6 תווים" value={form.password} onChange={e => update('password', e.target.value)} required /></div></div>
