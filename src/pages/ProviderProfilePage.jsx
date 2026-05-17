@@ -6,7 +6,7 @@ import { db } from '../firebase/config';
 import { useAuth } from '../contexts/AuthContext';
 import { trackConversationCreated } from '../utils/analytics';
 import toast from 'react-hot-toast';
-import { MapPin, Star, Phone, MessageCircle, DollarSign, ChevronRight } from 'lucide-react';
+import { MapPin, Star, Phone, MessageCircle, DollarSign, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import './ProviderProfilePage.css';
 
 // WhatsApp SVG icon
@@ -26,6 +26,7 @@ export default function ProviderProfilePage() {
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
   const [submittingReview, setSubmittingReview] = useState(false);
   const [startingChat, setStartingChat] = useState(false);
+  const [showPhone, setShowPhone] = useState(false);
 
   useEffect(() => {
     loadProvider();
@@ -142,14 +143,18 @@ export default function ProviderProfilePage() {
               </div>
               <div className="profile-info">
                 <h1>{provider.firstName} {provider.lastName}</h1>
-                <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginTop: 8 }}>
+                <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginTop: 8, alignItems: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--text-secondary)' }}>
                     <MapPin size={14} /><span>{provider.location}</span>
                   </div>
                   {provider.phone && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--text-secondary)' }}>
-                      <Phone size={14} /><span>{provider.phone}</span>
-                    </div>
+                    <button
+                      className={`show-phone-btn ${showPhone ? 'revealed' : ''}`}
+                      onClick={() => setShowPhone(p => !p)}
+                    >
+                      {showPhone ? <EyeOff size={15} /> : <Eye size={15} />}
+                      {showPhone ? provider.phone : 'הצג מספר פלאפון'}
+                    </button>
                   )}
                   {provider.priceRange && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--primary)', fontWeight: 700 }}>

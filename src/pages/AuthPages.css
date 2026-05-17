@@ -53,6 +53,17 @@
 .input-with-icon { padding-right: 40px !important; }
 
 .auth-forgot { text-align: left; font-size: 13px; }
+
+.password-eye-btn {
+  position: absolute;
+  left: 10px; top: 50%; transform: translateY(-50%);
+  background: transparent; border: none;
+  color: var(--text-muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  padding: 4px; border-radius: 4px;
+  transition: color 0.2s;
+}
+.password-eye-btn:hover { color: var(--primary); }
 .auth-forgot a { color: var(--primary); font-weight: 600; }
 .auth-forgot a:hover { text-decoration: underline; }
 

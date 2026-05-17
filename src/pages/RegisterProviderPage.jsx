@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
-import { User, Mail, Lock, Phone, MapPin, AtSign, DollarSign, FileText, Search, X, Check } from 'lucide-react';
+import { User, Mail, Lock, Phone, MapPin, AtSign, DollarSign, FileText, Search, X, Check, Eye, EyeOff } from 'lucide-react';
 import CitySearch from '../components/shared/CitySearch';
 import './AuthPages.css';
 import './RegisterProviderPage.css';
@@ -26,6 +26,8 @@ export default function RegisterProviderPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [categorySearch, setCategorySearch] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [form, setForm] = useState({
     firstName: '', lastName: '', username: '', email: '',
     phone: '', description: '', categories: [], location: '',
@@ -207,11 +209,23 @@ export default function RegisterProviderPage() {
 
           <div className="form-grid-2">
             <div className="input-group"><label>סיסמה * (לפחות 6 תווים)</label>
-              <div className="input-icon-wrapper"><Lock size={16} className="input-icon" />
-                <input type="password" className="input-field input-with-icon" placeholder="••••••••" value={form.password} onChange={e => update('password', e.target.value)} required /></div></div>
+              <div className="input-icon-wrapper">
+                <Lock size={16} className="input-icon" />
+                <input type={showPassword ? 'text' : 'password'} className="input-field input-with-icon" style={{ paddingLeft: 38 }} placeholder="••••••••" value={form.password} onChange={e => update('password', e.target.value)} required />
+                <button type="button" className="password-eye-btn" onClick={() => setShowPassword(p => !p)}>
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
             <div className="input-group"><label>אימות סיסמה *</label>
-              <div className="input-icon-wrapper"><Lock size={16} className="input-icon" />
-                <input type="password" className="input-field input-with-icon" placeholder="••••••••" value={form.confirmPassword} onChange={e => update('confirmPassword', e.target.value)} required /></div></div>
+              <div className="input-icon-wrapper">
+                <Lock size={16} className="input-icon" />
+                <input type={showConfirm ? 'text' : 'password'} className="input-field input-with-icon" style={{ paddingLeft: 38 }} placeholder="••••••••" value={form.confirmPassword} onChange={e => update('confirmPassword', e.target.value)} required />
+                <button type="button" className="password-eye-btn" onClick={() => setShowConfirm(p => !p)}>
+                  {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
           </div>
 
           <button type="submit" className="btn btn-primary btn-lg w-full" disabled={loading} style={{ marginTop: 8 }}>

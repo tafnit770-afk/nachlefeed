@@ -162,19 +162,6 @@ export default function HomePage() {
             <div className="hero-stat"><strong>⭐ 4.8</strong><span>דירוג ממוצע</span></div>
           </div>
         </div>
-        <div className="hero-illustration">
-          <div className="hero-blob" />
-          <div className="hero-card-preview">
-            <div className="hcp-avatar">ב.מ</div>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 14 }}>בנימין מזרחי</div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>שיפוצניק מקצועי</div>
-              <div style={{ display: 'flex', gap: 2, marginTop: 4 }}>
-                {[1,2,3,4,5].map(i => <span key={i} style={{ color: '#F59E0B', fontSize: 12 }}>★</span>)}
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* Categories */}
