@@ -59,7 +59,6 @@
 .hero-subtitle {
   font-size: 18px; color: rgba(255,255,255,0.82);
   margin-bottom: 32px; line-height: 1.7;
-  font-style: italic;
 }
 
 .hero-search { width: 100%; }

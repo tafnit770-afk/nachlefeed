@@ -145,7 +145,7 @@ export default function HomePage() {
       <section className="hero">
         <div className="hero-content">
           <h1 className="hero-title">תושבי נחלה היקרים,<br /><span>גלו את כל ספקי השירות</span><br />מאנ״ש שקיימים באזורכם</h1>
-          <p className="hero-subtitle">״נחל״ה ערבים זה לזה</p>
+          <p className="hero-subtitle">נחלה ערבים זה לזה</p>
           <form className="hero-search" onSubmit={handleSearch}>
             <div className="hero-search-inner">
               <Search size={20} className="hero-search-icon" />
@@ -155,9 +155,9 @@ export default function HomePage() {
             </div>
           </form>
           <div className="hero-stats">
-            <div className="hero-stat"><strong>2,400+</strong><span>ספקים פעילים</span></div>
+            <div className="hero-stat"><strong>845</strong><span>ספקים פעילים</span></div>
             <div className="hero-stat-divider" />
-            <div className="hero-stat"><strong>12,000+</strong><span>לקוחות מרוצים</span></div>
+            <div className="hero-stat"><strong>788</strong><span>לקוחות מרוצים</span></div>
             <div className="hero-stat-divider" />
             <div className="hero-stat"><strong>⭐ 4.8</strong><span>דירוג ממוצע</span></div>
           </div>
