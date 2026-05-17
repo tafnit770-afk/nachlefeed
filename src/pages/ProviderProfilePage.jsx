@@ -103,6 +103,25 @@ export default function ProviderProfilePage() {
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}><span className="spinner" style={{ width: 36, height: 36 }} /></div>;
   if (!provider) return <div className="card" style={{ textAlign: 'center', padding: 48 }}>ספק לא נמצא</div>;
 
+  if (!currentUser) {
+    return (
+      <div className="fade-in" style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'center', minHeight: '60vh', gap: 20, textAlign: 'center', padding: 32,
+      }}>
+        <div style={{ fontSize: 64 }}>🔒</div>
+        <h2 style={{ fontSize: 24, fontWeight: 800 }}>כניסה נדרשת</h2>
+        <p style={{ color: 'var(--text-secondary)', maxWidth: 360, lineHeight: 1.7 }}>
+          כדי לצפות בפרופיל הספק יש להתחבר או להירשם למערכת.
+        </p>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <button className="btn btn-primary btn-lg" onClick={() => navigate('/login')}>התחברות</button>
+          <button className="btn btn-secondary btn-lg" onClick={() => navigate('/register')}>הרשמה חינם</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="provider-profile fade-in">
       <button className="btn btn-ghost btn-sm" onClick={() => navigate('/providers')} style={{ marginBottom: 16 }}>
